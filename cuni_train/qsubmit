@@ -109,7 +109,7 @@ echo "== Sourcing:  \$HOME/\.bashrc"
 echo "=============================="
 
 # Source the bashrc
-. \$HOME/.bashrc
+#. \$HOME/.bashrc
 
 # Renice ourselves
 renice 10 \$\$
@@ -213,11 +213,11 @@ push @opts, map { ("-hold_jid", $_) } @holds;
 
 if ($engine eq "ge") {
   # qsub execution
-  safesystem((qw(qsub -j y -cwd -S /bin/bash), "-p", $priority, @opts, $tmp));
+  safesystem((qw(qsub -j y -cwd -V -S /home/anglistik/robertsw/local-clou/bin/bash), "-p", $priority, @opts, $tmp));
 } elsif ($engine eq "pbs") {
   # qsub execution
   my $cwd = `pwd`; chomp $cwd;
-  safesystem((qw(qsub -j oe -d), $cwd, qw(-S /bin/bash), "-p", $priority, @opts, $tmp));
+  safesystem((qw(qsub -j oe -d), $cwd, "-V", qw(-S /home/anglistik/robertsw/local-clou/bin/bash), "-p", $priority, @opts, $tmp));
 } elsif ($engine eq "console") {
   # execution on the console
   safesystem((qw(/bin/bash), $tmp)) or die;
