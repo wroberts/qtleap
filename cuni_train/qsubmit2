@@ -9,7 +9,7 @@
 #{
 if [ $ML_METHOD == maxent ]
 then
-	PARAMS_BASH="--feature_column $FEAT_COL -f $FEAT_CUT -p \"smooth_sigma $SMOOTH_SIGMA\""
+	PARAMS_BASH="--feature_column $FEAT_COL -f $FEAT_CUT -p \"'smooth_sigma $SMOOTH_SIGMA'\""
 fi
 if [ $ML_METHOD == vw ]
 then
