@@ -85,7 +85,9 @@ $(TRANSL_MODEL_LRC1) : $(DATA_SPLIT_LIST)
 	MIN_INSTANCES="$(MIN_INSTANCES)" \
 	MIN_PER_CLASS="$(MIN_PER_CLASS)" \
 	CLASS_COVERAGE="$(CLASS_COVERAGE)" \
-	PARAMS_BASH="$(PARAMS_BASH)" \
+	FEAT_COL="$(FEAT_COL)" \
+	FEAT_CUT="$(FEAT_CUT)" \
+	SMOOTH_SIGMA="$(SMOOTH_SIGMA)" \
 	               qsub -t 1:$$data_split_size \
 	               -j y \
 	               -cwd \
