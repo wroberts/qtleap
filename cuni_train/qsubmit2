@@ -1,0 +1,18 @@
+#!/home/anglistik/robertsw/local-clou/bin/bash
+
+# cat tmp/es_en/europarl-v7.es-en.e/tm_tlemma/tm_data_split/list
+# $SGE_TASK_ID
+# i is the line of the file
+# which file? $(DATA_SPLIT_LIST)
+# let's say DATA_SPLIT_LIST=tmp/es_en/europarl-v7.es-en.e/tm_tlemma/tm_data_split/list
+
+{
+    i=`tail -n+$SGE_TASK_ID $DATA_SPLIT_LIST | head -n1`
+    zcat $(DATA_SPLIT_DIR)/$$i | $(SCRIPT_DIR)/train.pl \
+				                              $(ML_METHOD) \
+				                              -i $(INSTANCES) -m $(MIN_INSTANCES) \
+				                              --min_per_class $(MIN_PER_CLASS) --class_coverage $(CLASS_COVERAGE) \
+				                              $(PARAMS_BASH) \
+				                              $(MODEL_SPLIT_DIR)/$$i; \
+    touch $(MODEL_SPLIT_DIR)/done.$$i
+} #2>&1 > $TRAIN_LOG_DIR/$JOB_NAME.o$JOB_ID.$TASK_ID
