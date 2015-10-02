@@ -75,23 +75,23 @@ $(TRANSL_MODEL_LRC1) : $(DATA_SPLIT_LIST)
 	@bin/log.sh INFO "Training partial TMs on cluster: $(DATA_SPLIT_LIST) => $(MODEL_SPLIT_DIR)/" >&2
 	mkdir -p $(MODEL_SPLIT_DIR)
 	DATA_SPLIT_SIZE=`cat $(DATA_SPLIT_LIST) | wc -l`
-	mkdir -p $TRAIN_LOG_DIR/train_tm.output
-	DATA_SPLIT_LIST=$DATA_SPLIT_LIST \
-	DATA_SPLIT_DIR=$DATA_SPLIT_DIR \
-	MODEL_SPLIT_DIR=$MODEL_SPLIT_DIR \
-	SCRIPT_DIR=$SCRIPT_DIR \
-	ML_METHOD=$ML_METHOD \
-	INSTANCES=$INSTANCES \
-	MIN_INSTANCES=$MIN_INSTANCES \
-	MIN_PER_CLASS=$MIN_PER_CLASS \
-	CLASS_COVERAGE=$CLASS_COVERAGE \
-	PARAMS_BASH=$PARAMS_BASH \
-	               qsub -t 1:$$DATA_SPLIT_SIZE \
+	mkdir -p $(TRAIN_LOG_DIR)/train_tm.output
+	DATA_SPLIT_LIST=$(DATA_SPLIT_LIST) \
+	DATA_SPLIT_DIR=$(DATA_SPLIT_DIR) \
+	MODEL_SPLIT_DIR=$(MODEL_SPLIT_DIR) \
+	SCRIPT_DIR=$(SCRIPT_DIR) \
+	ML_METHOD=$(ML_METHOD) \
+	INSTANCES=$(INSTANCES) \
+	MIN_INSTANCES=$(MIN_INSTANCES) \
+	MIN_PER_CLASS=$(MIN_PER_CLASS) \
+	CLASS_COVERAGE=$(CLASS_COVERAGE) \
+	PARAMS_BASH=$(PARAMS_BASH) \
+	               qsub -t 1:$(DATA_SPLIT_SIZE) \
 	               -j y \
 	               -cwd \
 	               -V \
 	               -S /home/anglistik/robertsw/local-clou/bin/bash \
-	               -o $TRAIN_LOG_DIR/train_tm.output \
+	               -o $(TRAIN_LOG_DIR)/train_tm.output \
 	               -N train_tm \
 	               -hard -l h_vmem=16g \
 	               -p -100 \
