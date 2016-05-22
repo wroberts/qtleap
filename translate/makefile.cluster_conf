@@ -3,7 +3,7 @@ LRC?=1
 JOBS=10
 MEM=7G
 ifeq ($(LRC), 1)
-LRC_FLAGS = -p --mem=$(MEM) --jobs=$(JOBS)  --qsub '-V -m be -M robertsw@rz.hu-berlin.de -S /home/anglistik/robertsw/local-clou/bin/bash'
+LRC_FLAGS = -p --mem=$(MEM) --jobs=$(JOBS)  --qsub '-V -S /home/anglistik/robertsw/local-clou/bin/bash'
 #or 
 #LRC_FLAGS = -p --mem=0 --qsub '-hard -l mem_free=$(MEM) -l act_mem_free=$(MEM) -l h_vmem=$(MEM)' --jobs $(JOBS)
 endif
