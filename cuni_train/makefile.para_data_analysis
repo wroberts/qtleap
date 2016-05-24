@@ -193,6 +193,8 @@ $(TREES_TECTO_LIST) : $(TREES_PARSE_LIST)
 		Align::T::CopyAlignmentFromAlayer selector=src language=$(SRC_LANG) to_selector=src to_language=$(TRG_LANG) \
 		Write::Treex storable=1 substitute='{^.*/([^\/]*)\.streex}{$(TREES_TECTO_DIR)/$$1.streex}'
 	find $(TREES_TECTO_DIR) -name "*.streex" | sort | sed 's|$(TREES_TECTO_DIR)/||' > $@
+	grep "UBERMWE" $TREEX_LOG_DIR/`ls -t $TREEX_LOG_DIR/output/*stderr | head -1` | \
+		sed -e 's/^.*UBERMWE: //' > $(TREES_TECTO_DIR)/mwes_seen_training.utf8.tsv
 
 tecto_data_list :
 	echo $(TREES_TECTO_LIST)
