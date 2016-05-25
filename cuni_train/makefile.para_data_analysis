@@ -196,7 +196,7 @@ $(TREES_TECTO_LIST) : $(TREES_PARSE_LIST)
 	find $(TREES_TECTO_DIR) -name "*.streex" | sort | sed 's|$(TREES_TECTO_DIR)/||' > $@
 
 $(MWES_SEEN_TRAINING_FILE) : $(TREES_TECTO_LIST)
-	grep "UBERMWE" $TREEX_LOG_DIR/`ls -t $TREEX_LOG_DIR/output/*stderr | head -1` | \
+	grep "UBERMWE" $TREEX_LOG_DIR/`ls -t $TREEX_LOG_DIR | head -1`/output/*stderr | \
 		sed -e 's/^.*UBERMWE: //' > $@
 
 tecto_data_list :
