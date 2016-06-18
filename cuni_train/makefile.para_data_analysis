@@ -199,6 +199,9 @@ $(MWES_SEEN_TRAINING_FILE) : $(TREES_TECTO_LIST)
 	grep "UBERMWE" $TREEX_LOG_DIR/`ls -t $TREEX_LOG_DIR | head -1`/output/*stderr | \
 		sed -e 's/^.*UBERMWE: //' > $@
 
+seen_mwes_list :
+	echo $(MWES_SEEN_TRAINING_FILE)
+
 tecto_data_list :
 	echo $(TREES_TECTO_LIST)
 
