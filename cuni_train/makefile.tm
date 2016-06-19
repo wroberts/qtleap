@@ -24,6 +24,9 @@ TMP_DIR=tmp/$(TRANSL_PAIR)/$(PARA_DATA_STEM)
 PARA_DATA_ANALYSIS_PARAMS=DATA="$(DATA)" STAGE=$(STAGE) LANG_PAIR=$(PARA_DATA_PAIR) TMP_DIR=tmp/$(PARA_DATA_PAIR)/$(PARA_DATA_STEM)
 TECTO_DATA_LIST:=$(shell $(MAKE) -s --no-print-directory -f makefile.para_data_analysis tecto_data_list $(PARA_DATA_ANALYSIS_PARAMS))
 
+seen_mwes_list :
+	$(MAKE) -s --no-print-directory -f makefile.para_data_analysis seen_mwes_list $(PARA_DATA_ANALYSIS_PARAMS)
+
 analysis : $(TECTO_DATA_LIST)
 $(TECTO_DATA_LIST) :
 	$(MAKE) -f makefile.para_data_analysis tecto $(PARA_DATA_ANALYSIS_PARAMS) LRC=$(LRC) JOBS=$(JOBS)
