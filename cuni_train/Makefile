@@ -81,7 +81,7 @@ transl_models : $(TRANSL_MODELS) $(MWES_TRAINED_FILE)
 $(TRANSL_MODELS) :
 	$(MAKE) -f makefile.tm $@ TRANSL_PAIR=$(TRANSL_PAIR) DATA="$(TRAIN_DATA)" STAGE=$(TRAIN_DATA_STAGE) PARA_DATA_SRC_SEL=$(PARA_DATA_SRC_SEL) LRC=$(LRC)
 
-MWES_SEEN_TRAINING_FILE:=$(shell $(MAKE) -s --no-print-directory -f makefile.para_data_analysis seen_mwes_list $(PARA_DATA_ANALYSIS_PARAMS))
+MWES_SEEN_TRAINING_FILE:=$(shell $(MAKE) -s --no-print-directory -f makefile.tm seen_mwes_list TRANSL_PAIR=$(TRANSL_PAIR) DATA="$(TRAIN_DATA)" STAGE=$(TRAIN_DATA_STAGE) PARA_DATA_SRC_SEL=$(PARA_DATA_SRC_SEL))
 
 $(MWES_TRAINED_FILE) : $(TLEMMA_STATIC_TM_FULLPATH)
 	cat $(MWES_SEEN_TRAINING_FILE) | perl '-MTreex::Tool::TranslationModel::Factory' -E ' \
