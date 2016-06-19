@@ -130,7 +130,7 @@ clean_for_giza :
 	-rm -rf $(FOR_GIZA_DIR)
 	-rm -rf $(TREES_MORPHO_DIR)
 	-rm $(FOR_GIZA_DATA)
-		
+
 ######################################## GIZA alignment ############################################
 
 ifneq ($(findstring giza,$(STAGES_TO_PASS)),)
@@ -196,7 +196,7 @@ $(TREES_TECTO_LIST) : $(TREES_PARSE_LIST)
 	find $(TREES_TECTO_DIR) -name "*.streex" | sort | sed 's|$(TREES_TECTO_DIR)/||' > $@
 
 $(MWES_SEEN_TRAINING_FILE) : $(TREES_TECTO_LIST)
-	grep "UBERMWE" $TREEX_LOG_DIR/`ls -t $TREEX_LOG_DIR | head -1`/output/*stderr | \
+	grep "UBERMWE" $(TREEX_LOG_DIR)/`ls -t $(TREEX_LOG_DIR) | head -1`/output/*stderr | \
 		sed -e 's/^.*UBERMWE: //' > $@
 
 seen_mwes_list :
