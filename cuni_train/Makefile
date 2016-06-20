@@ -84,13 +84,13 @@ $(TRANSL_MODELS) :
 MWES_SEEN_TRAINING_FILE:=$(shell $(MAKE) -s --no-print-directory -f makefile.tm seen_mwes_list TRANSL_PAIR=$(TRANSL_PAIR) DATA="$(TRAIN_DATA)" STAGE=$(TRAIN_DATA_STAGE) PARA_DATA_SRC_SEL=$(PARA_DATA_SRC_SEL))
 
 $(MWES_TRAINED_FILE) : $(TLEMMA_STATIC_TM_FULLPATH)
-	cat $(MWES_SEEN_TRAINING_FILE) | perl '-MTreex::Tool::TranslationModel::Factory' -E ' \
-	my $$m=Treex::Tool::TranslationModel::Factory->create_model("static"); \
-	$$m->load("'$<'"); \
-	while (<>) { \
-	chomp; \
-	my ($$compo, $$mwe) = split /\t/; \
-	say if $$m->get_submodel($$mwe =~ s/ /_/gr); \
+	cat $(MWES_SEEN_TRAINING_FILE) | perl '-MTreex::Tool::TranslationModel::Factory' -E '
+	my $$m=Treex::Tool::TranslationModel::Factory->create_model("static");
+	$$m->load("'$<'");
+	while (<>) {
+	chomp;
+	my ($$compo, $$mwe) = split /\t/;
+	say if $$m->get_submodel($$mwe =~ s/ /_/gr);
 	}' > $@
 
 clean_tm clean_tm_train_table clean_analysis clean_for_giza clean_giza clean_tecto :
