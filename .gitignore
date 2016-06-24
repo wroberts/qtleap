@@ -4,3 +4,4 @@
 /translate/*/*/runs/
 /translate/*/*/results.tsv
 *~
+.DS_Store
