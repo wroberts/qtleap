@@ -51,7 +51,8 @@ def ensure_correct_corpus(conf_filename, corpus):
         # comment out incorrect lines
         for line in lines:
             if line.strip().startswith('TRAIN_DATA'):
-                output_file.write('#' + line.strip() + '\n')
+                #output_file.write('#' + line.strip() + '\n')
+                pass
             else:
                 output_file.write(line + '\n')
     return True
@@ -74,7 +75,8 @@ def ensure_correct_theta(scen_filename, cond_theta):
         # comment out incorrect lines
         for line in lines:
             if line.strip().startswith('MarkMWEs'):
-                output_file.write('#' + line.strip() + '\n')
+                #output_file.write('#' + line.strip() + '\n')
+                pass
             else:
                 output_file.write(line + '\n')
         # add correct line
