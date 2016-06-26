@@ -82,6 +82,9 @@ def ensure_correct_theta(scen_filename, cond_theta):
             output_file.write(correct_line + '\n')
     return True
 
+def symlink_points_to(link_path, target_path):
+    return os.path.islink(link_path) and os.readlink(link_path) == target_path
+
 @click.command()
 @click.argument('cond_name')
 def main(cond_name):
@@ -110,17 +113,19 @@ def main(cond_name):
         except (AssertionError, ValueError):
             print 'Could not interpret condition code {}!'.format(cond)
             sys.exit(1)
-    if os.path.exists('tmp'):
-        print 'tmp already exists!'
-        sys.exit(1)
-    if os.path.exists('log'):
-        print 'log already exists!'
-        sys.exit(1)
-    #mkdir -p EU-expts/eu-elhuyar-theta0.1/{tmp,log}
     cond_dir = os.path.join('EU-expts', cond_name)
     tmp_dir = os.path.join(cond_dir, 'tmp')
-    mkdir_p(tmp_dir)
     log_dir = os.path.join(cond_dir, 'log')
+    if os.path.exists('tmp'):
+        if not symlink_points_to('tmp', tmp_dir):
+            print 'tmp already exists and points somewhere else!'
+            sys.exit(1)
+    if os.path.exists('log'):
+        if not symlink_points_to('log', log_dir):
+            print 'log already exists and points somewhere else!'
+            sys.exit(1)
+    #mkdir -p EU-expts/eu-elhuyar-theta0.1/{tmp,log}
+    mkdir_p(tmp_dir)
     mkdir_p(log_dir)
     if os.listdir(log_dir):
         print '{} is not empty!'.format(log_dir)
