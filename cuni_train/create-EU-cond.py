@@ -131,7 +131,7 @@ def main(cond_name):
     os.symlink(log_dir, 'log')
     # cd EU-expts/eu-elhuyar-theta0.1/tmp
     # mkdir -p eu_en/train.token/
-    if os.path.join(tmp_dir, 'en_eu'):
+    if os.path.exists(os.path.join(tmp_dir, 'en_eu')):
         print '{} already contains en_eu!'.format(tmp_dir)
         sys.exit(1)
     para_data_dir = os.path.join(tmp_dir, 'eu_en',
