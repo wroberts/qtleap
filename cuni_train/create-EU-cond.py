@@ -83,11 +83,13 @@ def ensure_correct_theta(scen_filename, cond_theta):
     return True
 
 @click.command()
-@click.argument('cond_name', help='something like eu-elhuyar-theta0.1')
+@click.argument('cond_name')
 def main(cond_name):
     '''
     Automates the creation of a new Basque experimental condition
     under cuni_train.
+
+    Call with an argument something like eu-elhuyar-theta0.1
     '''
     print 'create EU cond: {}'.format(cond_name)
     match = COND_NAME_REGEX.match(cond_name)
