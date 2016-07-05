@@ -31,6 +31,9 @@ COND_NAME_REGEX = re.compile('(?P<lang>[a-z]{2,4})-(?P<corpus>[a-z]+)-(?P<cond>.
 CORPUS_NAME_DIR_MAPPING = {'eu':
                            {'elhuyar': 'train.token',
                             'indomain': 'elhuyar-indomain.e'},
+                           'esen':
+                           {'europarl': 'europarl-v7.es-en.e',
+                            'indomain': 'indomain.es-en.e',},
 }
 
 CORPUS_NAME_PATH_MAPPING = {
@@ -38,27 +41,39 @@ CORPUS_NAME_PATH_MAPPING = {
     {'elhuyar': ('TRAIN_DATA=/work/robertsw/qtleap/elhuyar/train.token.baq; '
                  '/work/robertsw/qtleap/elhuyar/train.token.en'),
      'indomain': ('TRAIN_DATA=/work/robertsw/qtleap/elhuyar-indomain/elhuyar-indomain.eu; '
-                  '/work/robertsw/qtleap/elhuyar-indomain/elhuyar-indomain.en')},
+                  '/work/robertsw/qtleap/elhuyar-indomain/elhuyar-indomain.en'),
+    },
+    'esen':
+    {'europarl': ('TRAIN_DATA=/work/robertsw/qtleap/europarl/europarl-v7.es-en.es; '
+                  '/work/robertsw/qtleap/europarl/europarl-v7.es-en.en'),
+     'indomain': ('TRAIN_DATA=/work/robertsw/qtleap/indomain/indomain.es-en.es; '
+                  '/work/robertsw/qtleap/indomain/indomain.es-en.en'),
+    },
 }
 
 EXPT_DIR_NAME = {
     'eu': 'EU-expts',
+    'esen': 'ESEN-expts',
 }
 
 SHORT_LANG_CODE_MAPPING = {
     'eu': 'eu',
+    'esen': 'es',
 }
 
 LONG_LANG_CODE_MAPPING = {
     'eu': 'en_eu',
+    'esen': 'es_en',
 }
 
 CORPUS_CONF_FILE_MAPPING = {
     'eu': 'conf/eu_en.conf',
+    'esen': 'conf/es_en.conf',
 }
 
 THETA_CONF_FILE_MAPPING = {
     'eu': 'scenario/analysis/en_s4_analysis_a2t.scen',
+    'esen': 'scenario/analysis/es_s4_analysis_a2t.scen',
 }
 
 def ensure_correct_corpus(conf_filename, lang, corpus):
@@ -185,7 +200,7 @@ def main(cond_name):
     expts_abspath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                  EXPT_DIR_NAME[lang])
     baseline_data_dir = os.path.join(expts_abspath,
-                                     '{}-{}-baseline'.format(SHORT_LANG_CODE_MAPPING[lang], corpus),
+                                     '{}-{}-baseline'.format(lang, corpus),
                                      'tmp',
                                      LONG_LANG_CODE_MAPPING[lang],
                                      CORPUS_NAME_DIR_MAPPING[lang][corpus])
@@ -208,6 +223,9 @@ def main(cond_name):
     edits_made = edits_made or ensure_correct_corpus(CORPUS_CONF_FILE_MAPPING[lang], lang, corpus)
     # now edit the relevant .scen file to set the theta value
     edits_made = edits_made or ensure_correct_theta(THETA_CONF_FILE_MAPPING[lang], cond_theta)
+    # make sure no other .scen file is doing MWE analysis
+    for conf_file in set(THETA_CONF_FILE_MAPPING.values()) - set([THETA_CONF_FILE_MAPPING[lang]]):
+        edits_made = edits_made or ensure_correct_theta(conf_file, None)
     if edits_made:
         print 'File(s) have been edited! Check git status.'
     print 'Success.'
