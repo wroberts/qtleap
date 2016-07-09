@@ -24,4 +24,4 @@ A2T::MinimizeGrammatemes
 A2T::SetNodetype
 A2T::FixAtomicNodes
 A2T::MarkReflpronCoref
-MarkMWEs phrase_list_path=/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz comp_thresh=0.2
+MarkMWEs phrase_list_path=/work/robertsw/qtleap/mwe-v1/MWE_ID_es.utf8.txt.gz comp_thresh=0.1
