@@ -36,7 +36,7 @@ def mkdir_p(path):
             pass
         else: raise
 
-COND_NAME_REGEX = re.compile('(?P<lang>[a-z]{2,4})-(?P<corpus>[a-z]+)-(?P<cond>.+)')
+COND_NAME_REGEX = re.compile('(?P<lang>[a-z]{2,4})-(?P<corpus>[a-z]+)-(?P<cond>[^-]+)(?:-(?P<mwever>v[12]))?')
 
 CORPUS_NAME_DIR_MAPPING = {'eu':
                            {'elhuyar': 'train.token',
@@ -148,7 +148,7 @@ def main(cond_name):
     Automates the creation of a new Basque experimental condition
     under cuni_train.
 
-    Call with an argument something like eu-elhuyar-theta0.1
+    Call with an argument something like eu-elhuyar-theta0.1-v2
     '''
     print 'create new experimantal cond: {}'.format(cond_name)
     match = COND_NAME_REGEX.match(cond_name)
@@ -158,11 +158,17 @@ def main(cond_name):
     lang = match.group('lang')
     corpus = match.group('corpus')
     cond = match.group('cond')
+    mwever = match.group('mwever')
+    if mwever is None:
+        mwever = 'v2'
     if lang not in CORPUS_NAME_DIR_MAPPING:
         print 'unrecognised language code {}!'.format(lang)
         sys.exit(1)
     if corpus not in CORPUS_NAME_DIR_MAPPING[lang]:
         print 'unrecognised corpus code {}!'.format(corpus)
+        sys.exit(1)
+    if mwever not in ['v1', 'v2']:
+        print 'unrecognised MWE list version {}!'.format(mwever)
         sys.exit(1)
     cond_theta = None
     if cond != 'baseline':
@@ -173,6 +179,8 @@ def main(cond_name):
         except (AssertionError, ValueError):
             print 'Could not interpret condition code {}!'.format(cond)
             sys.exit(1)
+    if cond_name.endswith('-v2'):
+        cond_name = cond_name[:-3]
     cond_dir = os.path.join(EXPT_DIR_NAME[lang], cond_name)
     tmp_dir = os.path.join(cond_dir, 'tmp')
     log_dir = os.path.join(cond_dir, 'log')
