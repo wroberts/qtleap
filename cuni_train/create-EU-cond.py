@@ -86,6 +86,11 @@ THETA_CONF_FILE_MAPPING = {
     'esen': 'scenario/analysis/es_s4_analysis_a2t.scen',
 }
 
+MWE_LIST_FILENAME_MAPPING = {
+    'eu': {'v2': '/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz',},
+    'esen': {'v1': '/work/robertsw/qtleap/mwe-v1/MWE_ID_es.utf8.txt.gz',},
+}
+
 def ensure_correct_corpus(conf_filename, lang, corpus):
     correct_cpline = CORPUS_NAME_PATH_MAPPING[lang][corpus]
     with open(conf_filename) as input_file:
@@ -106,13 +111,14 @@ def ensure_correct_corpus(conf_filename, lang, corpus):
                 output_file.write(line + '\n')
     return True
 
-def ensure_correct_theta(scen_filename, cond_theta):
+def ensure_correct_theta(scen_filename, lang, mwever, cond_theta):
     # either cond_theta is None, in which case there should be no MarkMWEs line
     # or it is a string (like 0.3), in which case the last line of the file should be
     # MarkMWEs phrase_list_path=/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz comp_thresh=0.3
+    mwe_list_filename = MWE_LIST_FILENAME_MAPPING[lang][mwever]
     correct_line = ('MarkMWEs '
-                    'phrase_list_path=/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz '
-                    'comp_thresh={}').format(cond_theta)
+                    'phrase_list_path={} '
+                    'comp_thresh={}').format(mwe_list_filename, cond_theta)
     with open(scen_filename) as input_file:
         lines = input_file.read().strip().split('\n')
     last_line = [l.strip() for l in lines if l.strip()][-1]
@@ -240,7 +246,7 @@ def main(cond_name):
     edits_made = False
     edits_made = edits_made or ensure_correct_corpus(CORPUS_CONF_FILE_MAPPING[lang], lang, corpus)
     # now edit the relevant .scen file to set the theta value
-    edits_made = edits_made or ensure_correct_theta(THETA_CONF_FILE_MAPPING[lang], cond_theta)
+    edits_made = edits_made or ensure_correct_theta(THETA_CONF_FILE_MAPPING[lang], lang, mwever, cond_theta)
     # make sure no other .scen file is doing MWE analysis
     for conf_file in set(THETA_CONF_FILE_MAPPING.values()) - set([THETA_CONF_FILE_MAPPING[lang]]):
         edits_made = edits_made or ensure_correct_theta(conf_file, None)
