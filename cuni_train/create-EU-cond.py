@@ -7,6 +7,16 @@ create-EU-cond.py
 
 Automates the creation of a new Basque experimental condition under
 cuni_train.
+
+Operates using experimental condition tags such as
+"eu-elhuyar-theta0.1-v2".
+
+Format is LANG-CORPUS-EXPTCOND(-MWEVER)?
+
+LANG can be "eu" or "esen"
+CORPUS can be "elhuyar", "europarl" or "indomain"
+EXPTCOND can be "baseline" or "theta0.{1,2,3}"
+MWEVER can be "v1" or "v2" (default)
 '''
 
 import errno
