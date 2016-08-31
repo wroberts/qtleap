@@ -87,8 +87,10 @@ THETA_CONF_FILE_MAPPING = {
 }
 
 MWE_LIST_FILENAME_MAPPING = {
-    'eu': {'v2': '/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz',},
-    'esen': {'v1': '/work/robertsw/qtleap/mwe-v1/MWE_ID_es.utf8.txt.gz',},
+    'eu': {'v1': '/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_eu.utf8.txt_haulak.txt',
+           'v2': '/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz',},
+    'esen': {'v1': '/work/robertsw/qtleap/mwe-v1/MWE_ID_es.utf8.txt.gz',
+             'v2': '/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_es.utf8.txt_haulak.txt',},
 }
 
 def ensure_correct_corpus(conf_filename, lang, corpus):
