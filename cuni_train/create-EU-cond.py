@@ -251,7 +251,7 @@ def main(cond_name):
     edits_made = edits_made or ensure_correct_theta(THETA_CONF_FILE_MAPPING[lang], lang, mwever, cond_theta)
     # make sure no other .scen file is doing MWE analysis
     for conf_file in set(THETA_CONF_FILE_MAPPING.values()) - set([THETA_CONF_FILE_MAPPING[lang]]):
-        edits_made = edits_made or ensure_correct_theta(conf_file, None)
+        edits_made = edits_made or ensure_correct_theta(conf_file, lang, mwever, None)
     if edits_made:
         print 'File(s) have been edited! Check git status.'
     print 'Success.'
