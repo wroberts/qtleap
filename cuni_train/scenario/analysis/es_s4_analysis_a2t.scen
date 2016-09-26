@@ -24,4 +24,3 @@ A2T::MinimizeGrammatemes
 A2T::SetNodetype
 A2T::FixAtomicNodes
 A2T::MarkReflpronCoref
-CollapseMWEs phrase_list_path=/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_es.utf8.txt_haulak.txt comp_thresh=0.2 output_path=/dev/null
