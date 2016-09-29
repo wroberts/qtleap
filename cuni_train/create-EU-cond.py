@@ -87,6 +87,20 @@ LONG_LANG_CODE_MAPPING = {
     'enes': 'en_es',
 }
 
+def get_canonical_long_lang_code(lang):
+    # eu_en (or es_en) is always the directory with the trees.*
+    # directories, etc.
+    # here, we term this the canonical_long_lang_code
+    #
+    # depending on the long_lang_code, en_eu (or en_es) *may* be the
+    # directory where tm_formeme, etc. are stored.
+    # this is the long_lang_code
+    srclang, trglang = LONG_LANG_CODE_MAPPING[lang].split('_')
+    if srclang == 'en':
+        return ''.join((trglang, srclang))
+    else:
+        return LONG_LANG_CODE_MAPPING[lang]
+
 CORPUS_CONF_FILE_MAPPING = {
     'eu': 'conf/eu_en.conf',
     'esen': 'conf/es_en.conf',
@@ -284,10 +298,10 @@ def main(cond_name):
     os.symlink(log_dir, 'log')
     # cd EU-expts/eu-elhuyar-theta0.1/tmp
     # mkdir -p eu_en/train.token/
-    if os.path.exists(os.path.join(tmp_dir, LONG_LANG_CODE_MAPPING[lang])):
-        print '{} already contains {}!'.format(tmp_dir, LONG_LANG_CODE_MAPPING[lang])
+    if os.path.exists(os.path.join(tmp_dir, get_canonical_long_lang_code(lang))):
+        print '{} already contains {}!'.format(tmp_dir, get_canonical_long_lang_code(lang))
         sys.exit(1)
-    para_data_dir = os.path.join(tmp_dir, LONG_LANG_CODE_MAPPING[lang],
+    para_data_dir = os.path.join(tmp_dir, get_canonical_long_lang_code(lang),
                                  CORPUS_NAME_DIR_MAPPING[lang][corpus])
     mkdir_p(para_data_dir)
     # cd eu_en/train.token/
@@ -300,7 +314,7 @@ def main(cond_name):
     baseline_data_dir = os.path.join(expts_abspath,
                                      get_baseline_dirname(lang, gen, corpus),
                                      'tmp',
-                                     LONG_LANG_CODE_MAPPING[lang],
+                                     get_canonical_long_lang_code(lang),
                                      CORPUS_NAME_DIR_MAPPING[lang][corpus])
     if not os.path.exists(baseline_data_dir):
         print 'baseline model data dir {} not found!'.format(baseline_data_dir)
