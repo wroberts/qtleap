@@ -14,6 +14,7 @@ Operates using experimental condition tags such as
 Format is LANG-CORPUS-EXPTCOND(-MWEVER)?
 
 LANG can be "eu" or "esen"
+LANG can be followed by a "g" to indicate a model with generation
 CORPUS can be "elhuyar", "europarl" or "indomain"
 EXPTCOND can be "baseline" or "theta0.{1,2,3}"
 MWEVER can be "v1" or "v2" (default)
@@ -36,7 +37,8 @@ def mkdir_p(path):
             pass
         else: raise
 
-COND_NAME_REGEX = re.compile('(?P<lang>[a-z]{2,4})-(?P<corpus>[a-z]+)-(?P<cond>[^-]+)(?:-(?P<mwever>v[12]))?')
+COND_NAME_REGEX = re.compile('(?P<lang>[a-z]{2,4})(?P<gen>g)?-(?P<corpus>[a-z]+)-'
+                             '(?P<cond>[^-]+)(?:-(?P<mwever>v[12]))?')
 
 CORPUS_NAME_DIR_MAPPING = {'eu':
                            {'elhuyar': 'train.token',
@@ -45,6 +47,7 @@ CORPUS_NAME_DIR_MAPPING = {'eu':
                            {'europarl': 'europarl-v7.es-en.e',
                             'indomain': 'indomain.es-en.e',},
 }
+CORPUS_NAME_DIR_MAPPING['enes'] = CORPUS_NAME_DIR_MAPPING['esen']
 
 CORPUS_NAME_PATH_MAPPING = {
     'eu':
@@ -60,11 +63,18 @@ CORPUS_NAME_PATH_MAPPING = {
                   '/work/robertsw/qtleap/indomain/indomain.es-en.en'),
     },
 }
+CORPUS_NAME_PATH_MAPPING['enes'] = CORPUS_NAME_PATH_MAPPING['esen']
 
-EXPT_DIR_NAME = {
-    'eu': 'EU-expts',
-    'esen': 'ESEN-expts',
-}
+def get_expt_dir_name(lang, gen = None):
+    if gen is not None:
+        return '{}g-expts'.format(lang.upper())
+    return '{}-expts'.format(lang.upper())
+
+def get_baseline_dirname(lang, gen, corpus):
+    # return '{}-{}-baseline'.format(lang, corpus)
+    if gen is not None:
+        return '{}g-{}-baseline'.format(lang, corpus)
+    return '{}-{}-baseline'.format(lang, corpus)
 
 SHORT_LANG_CODE_MAPPING = {
     'eu': 'eu',
@@ -74,23 +84,27 @@ SHORT_LANG_CODE_MAPPING = {
 LONG_LANG_CODE_MAPPING = {
     'eu': 'en_eu',
     'esen': 'es_en',
+    'enes': 'en_es',
 }
 
 CORPUS_CONF_FILE_MAPPING = {
     'eu': 'conf/eu_en.conf',
     'esen': 'conf/es_en.conf',
+    'enes': 'conf/en_es.conf',
 }
 
 THETA_CONF_FILE_MAPPING = {
     'eu': 'scenario/analysis/en_s4_analysis_a2t.scen',
     'esen': 'scenario/analysis/es_s4_analysis_a2t.scen',
+    'enes': 'scenario/analysis/en_s4_analysis_a2t.scen',
 }
 
 MWE_LIST_FILENAME_MAPPING = {
-    'eu': {'v1': '/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_eu.utf8.txt_haulak.txt',
-           'v2': '/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz',},
-    'esen': {'v1': '/work/robertsw/qtleap/mwe-v1/MWE_ID_es.utf8.txt.gz',
-             'v2': '/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_es.utf8.txt_haulak.txt',},
+    'eu': {'v1': '/work/robertsw/qtleap/mwe-v1/MWE_ID_eu.utf8.txt.gz',
+           'v2': '/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_eu.utf8.txt_haulak.txt',},
+    'en': {'v2': '/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz',},
+    'es': {'v1': '/work/robertsw/qtleap/mwe-v1/MWE_ID_es.utf8.txt.gz',
+           'v2': '/work/robertsw/qtleap/mwe-v2/nora/MWE_ID_es.utf8.txt_haulak.txt',},
 }
 
 def ensure_correct_corpus(conf_filename, lang, corpus):
@@ -113,11 +127,12 @@ def ensure_correct_corpus(conf_filename, lang, corpus):
                 output_file.write(line + '\n')
     return True
 
-def ensure_correct_theta(scen_filename, lang, mwever, cond_theta):
-    # either cond_theta is None, in which case there should be no MarkMWEs line
+def ensure_correct_theta(scen_filename, lang, gen, mwever, cond_theta):
+    # either cond_theta is None (or gen is not None), in which case there should be no MarkMWEs line
     # or it is a string (like 0.3), in which case the last line of the file should be
     # MarkMWEs phrase_list_path=/work/robertsw/qtleap/mwe-v2/MWE_ID_en.utf8.txt.gz comp_thresh=0.3
-    mwe_list_filename = MWE_LIST_FILENAME_MAPPING[lang][mwever]
+    srclang = LONG_LANG_CODE_MAPPING[lang].split('_')[0]
+    mwe_list_filename = MWE_LIST_FILENAME_MAPPING[srclang][mwever]
     correct_line = ('MarkMWEs '
                     'phrase_list_path={} '
                     'comp_thresh={}').format(mwe_list_filename, cond_theta)
@@ -125,9 +140,9 @@ def ensure_correct_theta(scen_filename, lang, mwever, cond_theta):
         lines = input_file.read().strip().split('\n')
     last_line = [l.strip() for l in lines if l.strip()][-1]
     mwelines = [l.strip() for l in lines if l.strip().startswith('MarkMWEs')]
-    if cond_theta is None and len(mwelines) == 0:
+    if (cond_theta is None or gen is not None) and len(mwelines) == 0:
         return False
-    if (cond_theta is not None
+    if ((cond_theta is not None and gen is None)
         and len(mwelines) == 1
         and mwelines[0] == correct_line
         and mwelines[0] == last_line):
@@ -142,9 +157,65 @@ def ensure_correct_theta(scen_filename, lang, mwever, cond_theta):
             else:
                 output_file.write(line + '\n')
         # add correct line
-        if cond_theta is not None:
+        if cond_theta is not None and gen is None:
             output_file.write(correct_line + '\n')
     return True
+
+def ensure_correct_makefile(lang, gen, mwever, cond_theta):
+    makefile_filename = 'makefile.para_data_analysis'
+    with open(makefile_filename) as input_file:
+        lines = input_file.read().strip().split('\n')
+    lineno = [i for i, l in enumerate(lines)
+              if re.match(r'^\s*Align::T::CopyAlignmentFromAlayer', l)]
+    if not lineno:
+        print 'FATAL: Could not interpret makefile.para_data_analysis!'
+        sys.exit(1)
+    lineno = lineno[0]
+    # the next two lines are filled for gen conditions, empty otherwise
+    nextlines = lines[lineno + 1:lineno + 3]
+    num_matches = sum([int(bool(re.match(r'^\s*CollapseMWEs ', l))) for l in nextlines])
+    if num_matches not in [0, 2]:
+        print 'FATAL: unexpected number of CollapseMWEs in makefile.para_data_analysis!'
+        sys.exit(1)
+    # determine changes to make
+    edited = False
+    if gen is None:
+        if num_matches != 0:
+            # remove "nextlines"
+            lines = lines[:lineno + 1] + lines[lineno + 3:]
+            edited = True
+    else:
+        # create desired CollapseMWEs lines
+        srclang, trglang = LONG_LANG_CODE_MAPPING[lang].split('_')
+        indent = re.match(r'^\s*', lines[lineno]).group(0)
+        source_analysis = ('CollapseMWEs language={srclang} selector=src '
+                           'phrase_list_path={path} comp_thresh={thresh} mark_only=1 \\')
+        source_analysis = source_analysis.format(path=MWE_LIST_FILENAME_MAPPING[srclang][mwever],
+                                                 thresh=cond_theta,
+                                                 srclang=srclang)
+        source_analysis = indent + source_analysis
+        target_analysis = ('CollapseMWEs language={trglang} selector=src '
+                           'phrase_list_path={path} comp_thresh={thresh} \\')
+        target_analysis = target_analysis.format(path=MWE_LIST_FILENAME_MAPPING[trglang][mwever],
+                                                 thresh=cond_theta,
+                                                 trglang=trglang)
+        target_analysis = indent + target_analysis
+        desired_lines = [source_analysis, target_analysis]
+        if num_matches == 0:
+            # insert "nextlines"
+            lines = lines[:lineno + 1] + desired_lines + lines[lineno + 1:]
+            edited = True
+        elif nextlines != desired_lines:
+            # check "nextlines" to see if they're a match for what we
+            # want, fix otherwise
+            lines = lines[:lineno + 1] + desired_lines + lines[lineno + 3:]
+            edited = True
+    # if we have editing to do, do it now
+    if edited:
+        with open(makefile_filename, 'w') as output_file:
+            for line in lines:
+                output_file.write(line + '\n')
+    return edited
 
 def symlink_points_to(link_path, target_path):
     return os.path.islink(link_path) and os.readlink(link_path) == target_path
@@ -164,6 +235,7 @@ def main(cond_name):
         print 'could not interpret condition name {}!'.format(cond_name)
         sys.exit(1)
     lang = match.group('lang')
+    gen = match.group('gen')
     corpus = match.group('corpus')
     cond = match.group('cond')
     mwever = match.group('mwever')
@@ -189,7 +261,7 @@ def main(cond_name):
             sys.exit(1)
     if cond_name.endswith('-v2'):
         cond_name = cond_name[:-3]
-    cond_dir = os.path.join(EXPT_DIR_NAME[lang], cond_name)
+    cond_dir = os.path.join(get_expt_dir_name(lang, gen), cond_name)
     tmp_dir = os.path.join(cond_dir, 'tmp')
     log_dir = os.path.join(cond_dir, 'log')
     if os.path.exists('tmp'):
@@ -224,9 +296,9 @@ def main(cond_name):
     # {data_splits,for_giza,giza_tmp,trees.morpho,trees.parse,concat_data.en,\
     # concat_data.eu,for_giza.gz,giza.gz,preproc_data.en,preproc_data.eu} .
     expts_abspath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 EXPT_DIR_NAME[lang])
+                                 get_expt_dir_name(lang, gen))
     baseline_data_dir = os.path.join(expts_abspath,
-                                     '{}-{}-baseline'.format(lang, corpus),
+                                     get_baseline_dirname(lang, gen, corpus),
                                      'tmp',
                                      LONG_LANG_CODE_MAPPING[lang],
                                      CORPUS_NAME_DIR_MAPPING[lang][corpus])
@@ -248,10 +320,13 @@ def main(cond_name):
     edits_made = False
     edits_made = edits_made or ensure_correct_corpus(CORPUS_CONF_FILE_MAPPING[lang], lang, corpus)
     # now edit the relevant .scen file to set the theta value
-    edits_made = edits_made or ensure_correct_theta(THETA_CONF_FILE_MAPPING[lang], lang, mwever, cond_theta)
+    edits_made = edits_made or ensure_correct_theta(THETA_CONF_FILE_MAPPING[lang],
+                                                    lang, gen, mwever, cond_theta)
+    # now edit the Makefile to set the theta value for generation models
+    edits_made = edits_made or ensure_correct_makefile(lang, gen, mwever, cond_theta)
     # make sure no other .scen file is doing MWE analysis
     for conf_file in set(THETA_CONF_FILE_MAPPING.values()) - set([THETA_CONF_FILE_MAPPING[lang]]):
-        edits_made = edits_made or ensure_correct_theta(conf_file, lang, mwever, None)
+        edits_made = edits_made or ensure_correct_theta(conf_file, lang, gen, mwever, None)
     if edits_made:
         print 'File(s) have been edited! Check git status.'
     print 'Success.'
