@@ -97,7 +97,7 @@ def get_canonical_long_lang_code(lang):
     # this is the long_lang_code
     srclang, trglang = LONG_LANG_CODE_MAPPING[lang].split('_')
     if srclang == 'en':
-        return ''.join((trglang, srclang))
+        return '_'.join((trglang, srclang))
     else:
         return LONG_LANG_CODE_MAPPING[lang]
 
