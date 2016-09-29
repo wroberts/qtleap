@@ -79,6 +79,7 @@ def get_baseline_dirname(lang, gen, corpus):
 SHORT_LANG_CODE_MAPPING = {
     'eu': 'eu',
     'esen': 'es',
+    'enes': 'es',
 }
 
 LONG_LANG_CODE_MAPPING = {
